@@ -1,10 +1,10 @@
 import requests
 import json
- 
+from myfile import StockFileBase
  
 class SpiderBase(object):
   # 1. 构造函数，
-  def __init__(self, code, name):
+  def __init__(self, name, code):
     self.code = code
     self.name = name
     self.suss = False
@@ -12,7 +12,7 @@ class SpiderBase(object):
     self.url = ""
     self.params = {}
     self.headers = {}
-    self.data = {}
+    self.table = []
 
   # 2. 初始化请求参数，code
   def initRequest(self, url, params, headers):
@@ -31,11 +31,12 @@ class SpiderBase(object):
 
   # 4. 解析回包数据 parse json格式的数据
   def parse(self):
-    self.data = json.dumps(self.body, ensure_ascii=False)
-    print(self.data)
+    self.table = json.loads(self.body)
   
   # 5. 比较写入/增量写入
   def incWrite(self):
+    file = StockFileBase(self.name, self.code)
+    file.append(self.table)
     return self.body
 
   # 6. 爬虫跑起来

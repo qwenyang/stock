@@ -1,5 +1,6 @@
 import json
 from spiderbase import SpiderBase
+from myfile import getCodeList
 
 class ShareHolders(SpiderBase):
   # 1. 构造函数，
@@ -30,18 +31,32 @@ class ShareHolders(SpiderBase):
 
   # 4. 解析回包数据 parse json格式的数据
   def parse(self):
-    self.data = json.dumps(self.body, ensure_ascii=False)
-    print(self.data)
+    results = []
+    jsondata = json.loads(self.body)
+    for row in jsondata['result']['data']:
+      # 统计日期 END_DATE
+      # 股东户数 HOLDER_NUM
+      # 户均持股数量 AVG_HOLD_NUM
+      # 平均持股市值 AVG_MARKET_CAP
+      # 总市值 TOTAL_MARKET_CAP
+      # 总股本 TOTAL_A_SHARES
+      item = str(row['END_DATE']) + ',' + str(row['HOLDER_NUM']) + ',' + str(row['AVG_HOLD_NUM']) + ',' +\
+      str(row['AVG_MARKET_CAP']) + ',' + str(row['TOTAL_MARKET_CAP']) + ',' + str(row['TOTAL_A_SHARES'])
+      results.append(item)
+    self.table = results
   
   # 5. 比较写入/增量写入
   def incWrite(self):
-    return self.body
+    SpiderBase.incWrite(self)
 
   # 6. 爬虫跑起来
   def run(self):
     SpiderBase.run(self)
  
 if __name__ == '__main__':
-    spider = ShareHolders("002241", "shareholders")
+  codes = getCodeList()
+  for code in codes:
+    print(code)
+    spider = ShareHolders("shareholders", code)
     spider.initRequest()
     spider.run()
