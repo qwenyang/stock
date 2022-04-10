@@ -1,6 +1,6 @@
 import json
 from spiderbase import SpiderBase
-from myfile import getCodeList
+from stock.base.myfile import getCodeList
 
 class ShareHolders(SpiderBase):
   # 1. 构造函数，
@@ -32,7 +32,11 @@ class ShareHolders(SpiderBase):
   # 4. 解析回包数据 parse json格式的数据
   def parse(self):
     results = []
+    if not self.suss or self.body == "":
+      return
     jsondata = json.loads(self.body)
+    if not jsondata or ('result' not in jsondata) or ('data' not in jsondata['result']):
+      return
     for row in jsondata['result']['data']:
       # 统计日期 END_DATE
       # 股东户数 HOLDER_NUM
@@ -40,9 +44,13 @@ class ShareHolders(SpiderBase):
       # 平均持股市值 AVG_MARKET_CAP
       # 总市值 TOTAL_MARKET_CAP
       # 总股本 TOTAL_A_SHARES
-      item = str(row['END_DATE']) + ',' + str(row['HOLDER_NUM']) + ',' + str(row['AVG_HOLD_NUM']) + ',' +\
-      str(row['AVG_MARKET_CAP']) + ',' + str(row['TOTAL_MARKET_CAP']) + ',' + str(row['TOTAL_A_SHARES'])
-      results.append(item)
+      try:
+        item = str(row['END_DATE']) + ',' + str(row['HOLDER_NUM']) + ',' + str(row['AVG_HOLD_NUM']) + ',' +\
+        str(row['AVG_MARKET_CAP']) + ',' + str(row['TOTAL_MARKET_CAP']) + ',' + str(row['TOTAL_A_SHARES'])
+        results.append(item)
+      except :
+        print("code=%s parse error" % self.code)
+        self.suss = False
     self.table = results
   
   # 5. 比较写入/增量写入
@@ -52,11 +60,13 @@ class ShareHolders(SpiderBase):
   # 6. 爬虫跑起来
   def run(self):
     SpiderBase.run(self)
- 
+
 if __name__ == '__main__':
   codes = getCodeList()
   for code in codes:
-    print(code)
-    spider = ShareHolders("shareholders", code)
-    spider.initRequest()
-    spider.run()
+    try:
+      spider = ShareHolders("shareholders", code)
+      spider.initRequest()
+      spider.run()
+    except :
+      print("some code arse error")

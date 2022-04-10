@@ -3,6 +3,18 @@ from pathlib import Path
 
 BASE_STOCK_DATA_DIR = '/data/stock/'
 
+def getDataDirBase():
+  return BASE_STOCK_DATA_DIR
+
+def getCodeList():
+  codes = []
+  with open(BASE_STOCK_DATA_DIR+'/codelist', 'r') as f:
+    lines = f.readlines()
+    for i in range(0, len(lines)):
+      row = lines[i].rstrip('\n').split('=')
+      codes.append(row[0])
+    return codes
+
 class StockFileBase(object):
   def __init__(self, name, code):
     self.name = name
@@ -29,12 +41,3 @@ class StockFileBase(object):
     with open(self.filename, 'w') as f:
       for i in range(len(lines), len(results)):
         f.write(results[i]+'\n')
-
-def getCodeList():
-    codes = []
-    with open(BASE_STOCK_DATA_DIR+'/codelist', 'r') as f:
-      lines = f.readlines()
-      for i in range(0, len(lines)):
-        row = lines[i].rstrip('\n').split('=')
-        codes.append(row[0])
-      return codes

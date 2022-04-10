@@ -1,6 +1,6 @@
 import requests
 import json
-from myfile import StockFileBase
+from stock.base.myfile import StockFileBase
  
 class SpiderBase(object):
   # 1. 构造函数，
@@ -23,6 +23,8 @@ class SpiderBase(object):
   # 3. 去请求数据 request
   def request(self):
     try :
+      requests.packages.urllib3.disable_warnings()
+      print(self.url, self.params)
       response = requests.get(url=self.url, headers=self.headers, params=self.params, verify=False, timeout=5)
       self.body = response.text
       self.suss = True
