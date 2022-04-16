@@ -8,3 +8,10 @@ def atLeastOneYear(val):
     if len(lines) > 200:
         return True
     return False
+
+def atLeastFiveYear(val):
+    myfile = StockFileBase("historytrade", val.code)
+    lines = myfile.readAll()
+    if len(lines) > 200:
+        return True
+    return False

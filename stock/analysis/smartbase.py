@@ -74,7 +74,7 @@ class SmartBase(object):
       try:
         self.parse(code)
         value = self.analysis(code)
-        results.append(SmartValue(code, value))
+        results.append(value)
       except Exception as e:
         self.suss = False
         print(e)

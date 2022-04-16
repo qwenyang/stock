@@ -1,6 +1,18 @@
 import os
 import re
 
+# 从字典中获取默认的值
+def getKeyValueStr(dictv, ky, defv = ''):
+  try:
+    val = str(dictv[ky])
+    if val == 'None' or val == '':
+      return defv
+    
+    return val
+  except:
+    return defv
+  return defv
+
 def getCodeName(code):
   if code.startswith("3") or code.startswith("0"):
       return "sz" + code
